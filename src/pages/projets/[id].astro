@@ -1,0 +1,190 @@
+---
+import Layoutprojet from "../../layouts/Layoutprojet.astro";
+import pb from "../../../utils/pb";
+
+export async function getStaticPaths() {
+  try {
+    const projets = await pb.collection("projets").getList(1, 50, {
+      expand: "logiciels",
+    });
+
+    return projets.items.map((projet) => ({
+      params: { id: projet.id },
+      props: { projet },
+    }));
+  } catch (error) {
+    console.error("Erreur getStaticPaths:", error);
+    return [];
+  }
+}
+
+const { projet } = Astro.props;
+
+const POCKETBASE_URL =
+  import.meta.env.PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
+
+function getImageUrl(file: string) {
+  if (!file || !projet) return null;
+  const coll = projet.collectionId ?? "projets";
+  return `${POCKETBASE_URL}/api/files/${coll}/${projet.id}/${encodeURIComponent(file)}`;
+}
+
+function getLogicielIconUrl(logiciel: any) {
+  if (!logiciel?.icone) return null;
+  return `${POCKETBASE_URL}/api/files/${logiciel.collectionId}/${logiciel.id}/${encodeURIComponent(logiciel.icone)}`;
+}
+
+const images = [
+  projet?.image1,
+  projet?.image2,
+  projet?.image_card,
+  projet?.image3,
+  projet?.image4,
+].filter(Boolean);
+
+const logiciels = projet?.expand?.logiciels
+  ? Array.isArray(projet.expand.logiciels)
+    ? projet.expand.logiciels
+    : [projet.expand.logiciels]
+  : [];
+---
+
+<Layoutprojet title={`${projet.titre} - Eloïs Henry`}>
+  <section class="min-h-screen py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div class="lg:sticky lg:top-24 space-y-8">
+          <div class="space-y-4">
+            <h4 class="text-xl md:text-3xl font-bold leading-tight">
+              {projet.titre}
+            </h4>
+
+            {
+              projet.lien && (
+                <a
+                  href={projet.lien}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center mt-5 text-accent px-6 py-3 font-semibold border-2 rounded-sm border-accent hover:border-transparent hover:bg-primary hover:text-accent-content transition-all duration-300 focus:outline-none"
+                >
+                  Voir le projet
+                </a>
+              )
+            }
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <p class="text-gray-700 leading-relaxed text-m">
+              {projet.description}
+            </p>
+
+            {
+              projet.description_2 && (
+                <p class="text-gray-700 leading-relaxed mt-4 text-sm">
+                  {projet.description_2}
+                </p>
+              )
+            }
+          </div>
+
+          {
+            logiciels.length > 0 && (
+              <div class="space-y-4">
+                <h4 class="text-sm font-bold">Logiciels utilisés</h4>
+                <div class="grid grid-cols-2 gap-4">
+                  {logiciels.map((logiciel: any) => {
+                    const iconUrl = getLogicielIconUrl(logiciel);
+                    return (
+                      <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg hover:bg-accent hover:text-white transition-colors">
+                        {iconUrl && (
+                          <img
+                            src={iconUrl}
+                            alt={logiciel.nom_logiciel}
+                            class="w-8 h-8 object-contain"
+                          />
+                        )}
+                        <span class="text-sm font-semibold">
+                          {logiciel.nom_logiciel || logiciel.description}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )
+          }
+        </div>
+
+        <div class="space-y-8">
+          {
+            images.length > 0 ? (
+              images.map((image: string, index: number) => (
+                <div class="image-fade-in rounded-2xl overflow-hidden">
+                  <img
+                    src={getImageUrl(image)}
+                    alt={`${projet.titre} - Image ${index + 1}`}
+                    class="w-4xlh-auto object-cover transition-transform duration-700"
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
+                </div>
+              ))
+            ) : (
+              <div class="w-full h-96 bg-base-200 rounded-2xl flex items-center justify-center">
+                <span class="text-gray-400">Aucune image disponible</span>
+              </div>
+            )
+          }
+
+          {
+            projet?.logo && (
+              <div class="rounded-2xl overflow-hidden bg-white p-8 shadow-xl">
+                <img
+                  src={getImageUrl(projet.logo)}
+                  alt={`${projet.titre} - Logo`}
+                  class="w-full h-auto object-contain max-h-32"
+                />
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 px-6 bg-base-200">
+    <div class="max-w-7xl mx-auto text-center">
+      <h3 class="text-2xl font-bold mb-8">Découvrir d'autres projets</h3>
+      <a
+        href="/projets"
+        class="inline-block bg-black text-white px-8 py-4 rounded-full font-bold hover:bg-accent transition-colors"
+      >
+        Voir tous les projets
+      </a>
+    </div>
+  </section>
+</Layoutprojet>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .image-fade-in {
+    animation: fadeInUp 0.8s ease-out both;
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:sticky {
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+    }
+  }
+</style>

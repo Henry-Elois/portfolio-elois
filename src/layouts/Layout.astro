@@ -1,0 +1,280 @@
+---
+import "../style/global.css";
+import Fleur from "../components/Fleur.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = "Portfolio d'Eloïs Henry - Communicante et UX designer spécialisée en création multimédia et projets interactifs.",
+  image = "/og-image.jpg",
+} = Astro.props;
+
+const currentYear = new Date().getFullYear();
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="fr" data-theme="mytheme">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Eloïs Henry" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:locale" content="fr_FR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <link rel="icon" type="image/svg+xml" href="/fleur.svg" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Eloïs Henry",
+        jobTitle: "Communicante et UX Designer",
+        description:
+          "Étudiante en 2e année de BUT MMI, spécialisée en création multimédia et projets interactifs",
+        url: "https://elois-henry.fr",
+        sameAs: [
+          "https://linkedin.com/in/elois-henry",
+          "https://instagram.com/elois_henry",
+          "https://behance.net/eloishenry",
+        ],
+      })}
+    />
+  </head>
+
+  <body class="bg-base-100 text-neutral leading-relaxed">
+    <header
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[min(96%,1200px)]"
+    >
+      <div
+        class="bg-primary text-white rounded-full shadow-lg px-6 py-4 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-10 pl-2">
+          <a href="/apropos" class="font-bold text-lg hover:opacity-90"
+            >Qui suis-je ?</a
+          >
+          <div class="relative">
+            <a href="/projets" class="font-bold text-lg flex items-center gap-2"
+              >Mes projets
+            </a>
+          </div>
+        </div>
+        <div class="flex-1 flex justify-center">
+          <a href="/" class="block hover:opacity-90">
+            <div
+              class="w-16 h-16 rounded-full flex items-center justify-center"
+            >
+              <Fleur petal="#FFD700" centre-fleur="#FFFFFF" />
+            </div>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-4 pr-2">
+          <a
+            href="/contact"
+            class="bg-base-100 text-primary px-6 py-2 rounded-full font-bold shadow"
+            >Me contacter</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <div class="h-24"></div>
+
+    <main class="min-h-screen pt-15">
+      <slot />
+    </main>
+
+    <footer class="py-12 mt-20">
+      <div class="max-w-screen-2xl mx-auto px-4">
+        <div
+          class="relative bg-white border-8 border-primary rounded-[48px] overflow-hidden"
+        >
+          <div class="absolute right-6 top-6 z-10">
+            <Fleur
+              petal="var(--color-primary)"
+              centre-fleur="var(--color-secondary)"
+              size="48"
+            />
+          </div>
+
+          <div class="px-8 md:px-16 py-12">
+            <div class="text-center mb-10">
+              <h3 class="font-script text-5xl md:text-6xl tracking-tight">
+                Eloïs Henry
+              </h3>
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center md:text-left"
+            >
+              <div>
+                <h4 class="font-bold text-lg mb-6">Projets</h4>
+                <ul class="space-y-6 text-lg">
+                  <li>
+                    <a
+                      href="/projets"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Tous les projets</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Photothèque</a
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-lg mb-6">A propos</h4>
+                <ul class="space-y-6 text-lg">
+                  <li>
+                    <a
+                      href="/apropos"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Qui suis-je ?</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Mon parcours</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Mes compétences</a
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-lg mb-6">Contacte</h4>
+                <ul class="space-y-6 text-lg">
+                  <li class="text-neutral">Me contacter</li>
+                  <li class="text-neutral">06 61 19 46 09</li>
+                  <li>
+                    <a
+                      href="mailto:elois.hry@gmail.com"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >elois.hry@gmail.com</a
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 class="font-bold text-lg mb-6">Liens utiles</h4>
+                <ul class="space-y-6 text-lg">
+                  <li>
+                    <a
+                      href="/"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Accueil</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="/projets"
+                      class="text-neutral hover:text-secondary transition-colors"
+                      >Mes projets</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="border-t border-gray-200 mt-6 pt-8">
+              <p class="text-center text-sm opacity-80">
+                © {currentYear} - Eloïs Henry - Tous droits réservés.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const toggleBtn = document.getElementById("mobile-menu-toggle");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      toggleBtn?.addEventListener("click", () => {
+        mobileMenu?.classList.toggle("hidden");
+      });
+
+      const mobileLinks = mobileMenu?.querySelectorAll("a");
+      mobileLinks?.forEach((link) => {
+        link.addEventListener("click", () => {
+          mobileMenu?.classList.add("hidden");
+        });
+      });
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -100px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-fade-in-up");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".animate-on-scroll").forEach((el) => {
+          observer.observe(el);
+        });
+      });
+
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const element = e.currentTarget as HTMLAnchorElement;
+          const href = element.getAttribute("href");
+          if (href && href !== "#" && href !== "") {
+            e.preventDefault();
+            const target = document.querySelector(href) as HTMLElement;
+            if (target) {
+              const headerOffset = 80; // Hauteur du header fixe
+              const elementPosition = target.getBoundingClientRect().top;
+              const offsetPosition =
+                elementPosition + window.pageYOffset - headerOffset;
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+              });
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

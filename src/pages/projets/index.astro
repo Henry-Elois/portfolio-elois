@@ -1,0 +1,125 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Cardprojetall from "../../components/Cardprojetall.astro";
+
+const POCKETBASE_URL =
+  import.meta.env.PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
+
+let projets = [];
+try {
+  const res = await fetch(
+    `${POCKETBASE_URL}/api/collections/projets/records?perPage=24&sort=-created`
+  );
+  const data = await res.json();
+  projets = data?.items || [];
+  console.log("✅ Projets récupérés:", projets.length);
+} catch (error) {
+  console.error("❌ Erreur fetch projets:", error);
+}
+---
+
+<Layout title="Mes Projets - Eloïs Henry">
+  <section class="py-16 px-6">
+    <div class="max-w-screen-xl mx-auto text-center">
+      <div class="relative inline-block w-full">
+        <h1
+          class="title mb-8 text-[4.5rem] md:text-8xl font-black relative z-20 leading-[0.9]"
+        >
+          MA GALERIE DE PROJETS
+        </h1>
+
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-6 w-[120%] md:w-[110%] h-12 md:h-16 z-10 pointer-events-none"
+          viewBox="0 0 1200 120"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0,40 C150,10 350,70 600,40 C850,10 1050,70 1200,40 L1200,120 L0,120 Z"
+            fill="#FFC700"></path>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 px-6 bg-base-100">
+    <div class="max-w-screen-xl mx-auto">
+      {
+        projets && projets.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projets.map((projet, index) => (
+              <Cardprojetall projet={projet} index={index} />
+            ))}
+            <div
+    class="border-2 border-black rounded-3xl p-4 transition-colors duration-300 hover:border-primary"
+  >
+    <a href="/phototheque" class="card-projet group block">
+      <figure
+        class="relative w-full aspect-[4/3] overflow-hidden rounded-2xl bg-base-200 mb-6"
+      >
+        <img
+          src="/photo_hugo2.webp"
+          alt="Photo de paysage menant à la photothèque"
+          ,
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </figure>
+
+      <div class="space-y-2">
+        <h4
+          class="text-2xl md:text-2xl font-bold leading-tight group-hover:text-accent transition-colors"
+        >
+          Photothèque
+        </h4>
+
+        <div
+          class="flex items-center gap-2 text-sm font-semibold border-b-2 border-black pb-1 w-fit group-hover:border-accent group-hover:text-accent transition-colors"
+        >
+          <span>Voir le projet</span>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </div>
+      </div>
+    </a>
+  </div>
+  <style>
+    .card-projet {
+      transition: all 0.3s ease;
+    }
+  </style>
+          </div>
+        ) : (
+          <div class="text-center py-12 bg-warning/10 rounded-3xl border-4 border-warning">
+            <p class="text-gray-600 mb-6 text-lg">⚠️ Aucun projet trouvé</p>
+            <p class="text-sm text-gray-500">
+              Vérifie que PocketBase est démarré sur {POCKETBASE_URL}
+            </p>
+          </div>
+        )
+      }
+      
+    </div>
+  </section>
+
+  
+
+  <section class="py-12 px-6 text-center">
+    <a
+      href="/apropos"
+      class="btn btn-accent btn-lg rounded-full px-8 text-white font-bold shadow-lg hover:shadow-xl transition-all"
+    >
+      Voir mes compétences
+    </a>
+  </section>
+</Layout>

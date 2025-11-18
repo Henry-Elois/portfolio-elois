@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Arial, Helvetica, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Poppins", Arial, Helvetica, sans-serif;
+    @apply bg-base-100 text-base-content antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h5,
+  h6 {
+    font-family: Impact, "Haettenschweiler", "Arial Black", sans-serif;
+    font-weight: 900;
+  }
+
+  h4 {
+    font-family: "Poppins", Arial, Helvetica, sans-serif;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .title-3d {
+    font-family: Impact, sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 900;
+    color: #ff076f;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    text-shadow: 4px 4px 0px #8b003c, 8px 8px 0px rgba(139, 0, 60, 0.7),
+      12px 12px 0px rgba(139, 0, 60, 0.5);
+  }
+
+  .subtitle-script {
+    font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 400;
+  }
+
+  .title-3d-rotating {
+    font-family: Impact, sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 900;
+    color: #ff076f;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    text-shadow: 4px 4px 0px #8b003c, 8px 8px 0px rgba(139, 0, 60, 0.7),
+      12px 12px 0px rgba(139, 0, 60, 0.5);
+    transform-style: preserve-3d;
+    animation: rotate3d 10s infinite linear;
+  }
+
+  @keyframes rotate3d {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+}
+@layer components {
+  .animate-float-3d {
+    animation: float3DImage 5s ease-in-out infinite;
+    filter: drop-shadow(8px 8px 15px rgba(0, 0, 0, 0.3));
+  }
+
+  @keyframes float3DImage {
+    0%,
+    100% {
+      transform: perspective(1000px) rotateY(-8deg) rotateX(3deg)
+        translateY(0px);
+    }
+    50% {
+      transform: perspective(1000px) rotateY(8deg) rotateX(-3deg)
+        translateY(-30px);
+    }
+  }
+  .animate-spin-3d {
+    animation: spin3D 15s linear infinite;
+    filter: drop-shadow(8px 8px 15px rgba(0, 0, 0, 0.3));
+  }
+
+  @keyframes spin3D {
+    0% {
+      transform: perspective(1200px) rotateY(0deg) rotateX(5deg);
+    }
+    100% {
+      transform: perspective(1200px) rotateY(360deg) rotateX(5deg);
+    }
+  }
+}
