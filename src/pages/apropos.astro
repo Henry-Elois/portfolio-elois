@@ -13,17 +13,23 @@ try {
   const projetsRes = await fetch(
     `${POCKETBASE_URL}/api/collections/projets/records`
   );
-  const projetsData = await projetsRes.json();
-  projets = projetsData.items || [];
+  if (projetsRes.ok) {
+    const projetsData = await projetsRes.json();
+    projets = projetsData.items || [];
+  } else {
+    console.warn(`⚠️ Statut ${projetsRes.status} pour projets`);
+  }
 
   const logicielsRes = await fetch(
     `${POCKETBASE_URL}/api/collections/logiciels/records`
   );
-  const logicielsData = await logicielsRes.json();
-  logiciels = logicielsData.items || [];
-
-  console.log("✅ Logiciels récupérés:", logiciels.length);
-  console.log("📦 Premier logiciel:", logiciels[0]);
+  if (logicielsRes.ok) {
+    const logicielsData = await logicielsRes.json();
+    logiciels = logicielsData.items || [];
+    console.log("✅ Logiciels récupérés:", logiciels.length);
+  } else {
+    console.warn(`⚠️ Statut ${logicielsRes.status} pour logiciels`);
+  }
 } catch (error) {
   console.error("❌ Erreur lors de la récupération des données:", error);
 }

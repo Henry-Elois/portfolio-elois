@@ -8,9 +8,13 @@ try {
   const res = await fetch(
     `${POCKETBASE_URL}/api/collections/projets/records?perPage=24&sort=-created`
   );
-  const data = await res.json();
-  projets = data?.items || [];
-  console.log("✅ Projets récupérés:", projets.length);
+  if (res.ok) {
+    const data = await res.json();
+    projets = data?.items || [];
+    console.log("✅ Projets récupérés:", projets.length);
+  } else {
+    console.warn(`⚠️ Statut ${res.status}: PocketBase non disponible`);
+  }
 } catch (error) {
   console.error("❌ Erreur fetch projets:", error);
 }

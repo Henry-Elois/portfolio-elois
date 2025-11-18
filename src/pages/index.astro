@@ -17,8 +17,14 @@ try {
       `${POCKETBASE_URL}/api/collections/logiciels/records?perPage=3&sort=-created`
     ),
   ]);
-  projets = (await projetsRes.json()).items || [];
-  logiciels = (await logicielsRes.json()).items || [];
+  if (projetsRes.ok) {
+    const data = await projetsRes.json();
+    projets = data.items || [];
+  }
+  if (logicielsRes.ok) {
+    const data = await logicielsRes.json();
+    logiciels = data.items || [];
+  }
 } catch (err) {
   console.error("Erreur fetch:", err);
 }
