@@ -1,14 +1,13 @@
 ---
-const { projet, href } = Astro.props || {};
-const POCKETBASE_URL =
-  import.meta.env.PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
+import { POCKETBASE_URL } from "../../utils/pb";
 
+const { projet, href } = Astro.props || {};
 
 const imageFile = projet?.image_card;
 const collectionId = projet?.collectionId ?? "projets";
 const imageUrl = imageFile
   ? `${POCKETBASE_URL}/api/files/${collectionId}/${projet.id}/${imageFile}`
-  : "/placeholder-project.png"; 
+  : "/placeholder-project.png";
 
 const title = projet?.titre ?? projet?.title ?? "Projet";
 const description = projet?.description ?? projet?.description_2 ?? "";

@@ -1,6 +1,6 @@
 ---
 import Layoutprojet from "../../layouts/Layoutprojet.astro";
-import pb from "../../../utils/pb";
+import pb, { POCKETBASE_URL } from "../../../utils/pb";
 
 export async function getStaticPaths() {
   try {
@@ -19,9 +19,6 @@ export async function getStaticPaths() {
 }
 
 const { projet } = Astro.props;
-
-const POCKETBASE_URL =
-  import.meta.env.PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
 
 function getImageUrl(file: string) {
   if (!file || !projet) return null;

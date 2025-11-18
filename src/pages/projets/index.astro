@@ -1,9 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Cardprojetall from "../../components/Cardprojetall.astro";
-
-const POCKETBASE_URL =
-  import.meta.env.PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
+import { POCKETBASE_URL } from "../../../utils/pb";
 
 let projets = [];
 try {

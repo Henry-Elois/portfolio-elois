@@ -7,7 +7,7 @@ const isDev =
   (typeof window !== "undefined" && window.location.hostname === "localhost");
 const path = isDev
   ? "http://localhost:8090"
-  : "https://portfolio.eloishenry.fr:443";
+  : "https://portfolio.eloishenry.fr";
 
 const pb = new PocketBase(path) as TypedPocketBase;
 export const POCKETBASE_URL = path;
