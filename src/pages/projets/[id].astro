@@ -2,6 +2,8 @@
 import Layoutprojet from "../../layouts/Layoutprojet.astro";
 import pb, { POCKETBASE_URL } from "../../../utils/pb";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   try {
     const projets = await pb.collection("projets").getList(1, 50, {
@@ -19,6 +21,11 @@ export async function getStaticPaths() {
 }
 
 const { projet } = Astro.props;
+
+// Vérification que le projet existe
+if (!projet) {
+  return Astro.redirect("/projets");
+}
 
 function getImageUrl(file: string) {
   if (!file || !projet) return null;
