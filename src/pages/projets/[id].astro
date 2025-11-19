@@ -22,7 +22,7 @@ export async function getStaticPaths() {
 
 const { projet } = Astro.props;
 
-// Vérification que le projet existe
+
 if (!projet) {
   return Astro.redirect("/projets");
 }
