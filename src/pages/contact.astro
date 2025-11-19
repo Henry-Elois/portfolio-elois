@@ -286,12 +286,7 @@ import Layout from "../layouts/Layout.astro";
   </div>
 </Layout>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
-></script>
 <script>
-  // Initialize EmailJS with your public key
-  emailjs.init("YOUR_PUBLIC_KEY");
-
   const form = document.getElementById("contactForm") as HTMLFormElement;
   const btnText = document.getElementById("btnText") as HTMLElement;
   const btnLoader = document.getElementById("btnLoader") as HTMLElement;
@@ -313,20 +308,34 @@ import Layout from "../layouts/Layout.astro";
     try {
       const formData = new FormData(form);
 
-      const templateParams = {
-        from_name: `${formData.get("firstName")} ${formData.get("lastName")}`,
-        from_email: formData.get("email"),
-        message: formData.get("message"),
+      const contactData = {
+        prenom: formData.get("firstName") as string,
+        nom: formData.get("lastName") as string,
+        email: formData.get("email") as string,
+        message: formData.get("message") as string,
       };
 
-      await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", templateParams);
+      // Appel à l'API route
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contactData),
+      });
 
-      successMessage.classList.remove("hidden");
-      setTimeout(() => {
-        successMessage.classList.add("hidden");
-      }, 5000);
+      const result = await response.json();
 
-      form.reset();
+      if (result.success) {
+        successMessage.classList.remove("hidden");
+        setTimeout(() => {
+          successMessage.classList.add("hidden");
+        }, 5000);
+
+        form.reset();
+      } else {
+        throw new Error(result.error || "Erreur inconnue");
+      }
     } catch (error) {
       console.error("Erreur:", error);
       errorMessage.classList.remove("hidden");
