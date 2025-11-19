@@ -315,7 +315,6 @@ import Layout from "../layouts/Layout.astro";
         message: formData.get("message") as string,
       };
 
-      // Appel à l'API route
       const response = await fetch("/apis/contact", {
         method: "POST",
         headers: {
