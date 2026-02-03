@@ -37,12 +37,12 @@ jobs:
             mkdir -p /var/www/portfolio/client
             mkdir -p /var/www/portfolio/server
 
-      - name: Deploy files to VPS via rsync
+      - name: Deploy files to VPS via scp
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
-          rsync -avz --delete -e "ssh -i private_key -o StrictHostKeyChecking=no -p 22029" dist/client/ ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/portfolio/client/
-          rsync -avz --delete -e "ssh -i private_key -o StrictHostKeyChecking=no -p 22029" dist/server/ ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/portfolio/server/
+          scp -i private_key -o StrictHostKeyChecking=no -P 22029 -r dist/client/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/portfolio/client/
+          scp -i private_key -o StrictHostKeyChecking=no -P 22029 -r dist/server/* ${{ secrets.USER }}@${{ secrets.HOST }}:/var/www/portfolio/server/
           rm -f private_key
       - name: Install production dependencies on VPS
         uses: appleboy/ssh-action@v1.0.0
