@@ -34,7 +34,7 @@ jobs:
         port: 22029
         source: "dist/*"
         target: "/var/www/portfolio"
-        strip_components: 1
+        strip_components: 0
         rm: false
         overwrite: true
         debug: true
