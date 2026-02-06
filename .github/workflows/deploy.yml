@@ -24,11 +24,17 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Prepare production dependencies
+      - name: Clean and install production dependencies only
         run: |
-          npm prune --production
-          cp -r node_modules dist/server/
-          cp package.json dist/server/
+          rm -rf node_modules
+          npm ci --omit=dev --ignore-scripts
+
+      - name: Prepare deployment package
+        run: |
+          mkdir -p deploy_package
+          cp -r dist/* deploy_package/
+          cp -r node_modules deploy_package/server/
+          cp package.json deploy_package/server/
 
       - name: Deploy to VPS via SCP
         uses: appleboy/scp-action@v0.1.3
@@ -37,19 +43,21 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22029
-          source: "dist/*"
-          target: "/var/www/portfolio"
+          source: "deploy_package/*"
+          target: "/var/www/portfolio/"
           strip_components: 1
           rm: false
           overwrite: true
+          debug: true
 
-      - name: Restart application with PM2
+      - name: Restart application on VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22029
+          command_timeout: 30s
           script: |
             cd /var/www/portfolio/server
             PORT=8092 pm2 restart portfolio || PORT=8092 pm2 start entry.mjs --name portfolio
