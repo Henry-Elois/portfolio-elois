@@ -2,6 +2,7 @@
 import Layoutprojet from "../../layouts/Layoutprojet.astro";
 import pb, { POCKETBASE_URL } from "../../../utils/pb";
 
+export const prerender = true
 
 export async function getStaticPaths() {
   try {
@@ -21,6 +22,7 @@ export async function getStaticPaths() {
 
 const { projet } = Astro.props;
 
+console.log("vous êtes sur la page ", projet?.titre);
 
 if (!projet) {
   return Astro.redirect("/projets");
