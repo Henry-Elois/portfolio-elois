@@ -7,136 +7,165 @@ interface Photo {
   collectionId: string;
   titre: string;
   legende?: string;
-  categorie?: string;
+  type?: string; // ← renommé
   photo: string;
 }
 
 let photos: Photo[] = [];
 
 try {
-  const data = await pb.collection('photos').getList(1, 50, {
-    sort: '-created',
+  const data = await pb.collection("photos").getList(1, 50, {
+    sort: "-created",
   });
   photos = data.items.map((item: any) => ({
     id: item.id,
     collectionId: item.collectionId,
-    titre: item.titre || 'Sans titre',
+    titre: item.titre || "Sans titre",
     legende: item.legende,
-    categorie: item.categorie,
-    photo: item.photo
+    type: item.type, // ← renommé
+    photo: item.photo,
   }));
-  console.log("Photos récupérées:", photos.length);
-  console.log("Première photo:", photos[0]);
 } catch (error) {
   console.error("Erreur photos:", error);
 }
+
 function getImageUrl(photo: Photo) {
   return `${POCKETBASE_URL}/api/files/${photo.collectionId}/${photo.id}/${photo.photo}`;
 }
 
-const photosData = photos.map(p => ({
+const photosData = photos.map((p) => ({
   titre: p.titre,
-  legende: p.legende || '',
-  image: getImageUrl(p)
+  legende: p.legende || "",
+  image: getImageUrl(p),
 }));
+
+const categories = ["sport", "paysage", "artiste"];
 ---
 
 <Layoutprojet title="Photothèque - Eloïs Henry">
   <section class="py-20 px-6">
     <div class="max-w-7xl mx-auto text-center">
-     <img
+      <img
         src="photo_hugo2.webp"
         alt="Photo dans les montagnes par Eloïs Henry"
-        class="w-max h-max mx-auto mb-6"
-        />
+        class="w-full max-w-2xl h-auto mx-auto mb-6"
+      />
       <p class="text-xl text-gray-600 max-w-2xl mx-auto m-18">
-        Cette page rassemble une sélection de photographies capturées au fil de mes explorations et projets personnels. Chaque image invite à la découverte d’un regard, d’une lumière ou d’un instant suspendu, avec cette volonté de saisir l’émotion brute du paysage ou de la rencontre
+        Cette page rassemble une sélection de photographies capturées au fil de
+        mes explorations et projets personnels. Chaque image invite à la
+        découverte d'un regard, d'une lumière ou d'un instant suspendu, avec
+        cette volonté de saisir l'émotion brute du paysage ou de la rencontre.
       </p>
-<img
+      <img
         src="image27.webp"
-        alt="photo de port grimaux par Eloïs Henry"
-        class="w-140 h-auto m-6 mx-auto"
-        />
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto m-18">À travers cette collection, je cherche à raconter des histoires visuelles authentiques où la nature, l’humain et le moment dialoguent. Chaque photo témoigne de mon approche : attentive aux détails, guidée par la curiosité et le plaisir de partager l’atmosphère unique d’un lieu ou d’une scène. </p>
+        alt="photo de port grimaud par Eloïs Henry"
+        class="w-6/12 max-w-3xl h-auto m-6 mx-auto"
+      />
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto m-18">
+        À travers cette collection, je cherche à raconter des histoires
+        visuelles authentiques où la nature, l'humain et le moment dialoguent.
+        Chaque photo témoigne de mon approche : attentive aux détails, guidée
+        par la curiosité et le plaisir de partager l'atmosphère unique d'un lieu
+        ou d'une scène.
+      </p>
     </div>
   </section>
 
   <section class="py-12 px-6">
     <div class="max-w-7xl mx-auto">
-      {photos.length > 0 ? (
-        <div class="masonry-grid">
-          {photos.map((photo, index) => (
-            <div 
-              class="masonry-item group cursor-pointer"
-              data-index={index}
-            >
-              <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                <img
-                  src={getImageUrl(photo)}
-                  alt={photo.titre || "Photo"}
-                  class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                
-                  {photo.legende && (
-                    <p class="text-white/90 text-sm">
-                      {photo.legende}
-                    </p>
-                  )}
-                  {photo.categorie && (
-                    <span class="inline-block mt-2 px-3 py-1 bg-accent text-white text-xs font-bold rounded-full w-fit">
-                      {photo.categorie}
-                    </span>
+      <!-- Boutons de filtre -->
+      <div class="flex justify-center gap-3 mb-10 flex-wrap">
+        <button class="filter-btn active" data-filter="all">Tous</button>
+        {
+          categories.map((cat) => (
+            <button class="filter-btn" data-filter={cat}>
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        photos.length > 0 ? (
+          <div class="masonry-grid">
+            {photos.map((photo, index) => (
+              <div
+                class="masonry-item group cursor-pointer"
+                data-index={index}
+                data-categorie={photo.type || ""}
+              >
+                <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                  <img
+                    src={getImageUrl(photo)}
+                    alt={photo.titre || "Photo"}
+                    class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  {(photo.legende || photo.type) && (
+                    <div class="photo-overlay absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {photo.legende && (
+                        <p class="text-white/90 text-sm">{photo.legende}</p>
+                      )}
+                      {photo.type && (
+                        <span class="inline-block mt-2 px-3 py-1 bg-accent text-white text-xs font-bold rounded-full w-fit">
+                          {photo.type}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div class="text-center py-20">
-          <p class="text-xl text-gray-600 mb-6">Aucune photo pour le moment</p>
-          <p class="text-gray-500">Ajoutez des photos dans PocketBase</p>
-        </div>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-20">
+            <p class="text-xl text-gray-600 mb-6">
+              Aucune photo pour le moment
+            </p>
+            <p class="text-gray-500">Ajoutez des photos dans PocketBase</p>
+          </div>
+        )
+      }
+
+      <p id="noResults" class="text-center text-gray-500 mt-10 hidden">
+        Aucune photo dans cette catégorie pour le moment.
+      </p>
     </div>
   </section>
 
-  <div id="lightbox" class="fixed inset-0 z-50 bg-black/95 items-center justify-center p-4" style="display: none;">
-    <button 
+  <!-- Lightbox / carrousel -->
+  <div
+    id="lightbox"
+    class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm items-center justify-center p-4"
+    style="display: none;"
+  >
+    <button
       id="closeLightbox"
-      class="absolute top-6 right-6 text-white text-4xl hover:text-accent transition-colors z-10"
-      aria-label="Fermer"
+      class="lightbox-btn lightbox-close"
+      aria-label="Fermer">×</button
     >
-      ×
-    </button>
-    
-    <button 
+    <button
       id="prevPhoto"
-      class="absolute left-6 text-white text-4xl hover:text-accent transition-colors z-10"
-      aria-label="Photo précédente"
+      class="lightbox-btn lightbox-nav lightbox-prev"
+      aria-label="Photo précédente">‹</button
     >
-      ‹
-    </button>
-    
-    <button 
+    <button
       id="nextPhoto"
-      class="absolute right-6 text-white text-4xl hover:text-accent transition-colors z-10"
-      aria-label="Photo suivante"
+      class="lightbox-btn lightbox-nav lightbox-next"
+      aria-label="Photo suivante">›</button
     >
-      ›
-    </button>
 
     <div class="max-w-6xl w-full">
-      <img 
+      <img
         id="lightboxImage"
-        src="" 
-        alt="" 
-        class="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+        src=""
+        alt=""
+        class="lightbox-image w-full h-auto max-h-[80vh] object-contain rounded-xl"
       />
       <div id="lightboxCaption" class="text-white text-center mt-6">
         <h3 id="lightboxTitle" class="text-2xl font-bold mb-2"></h3>
         <p id="lightboxLegende" class="text-gray-300"></p>
+        <p id="lightboxCounter" class="text-gray-400 text-sm mt-3"></p>
       </div>
     </div>
   </div>
@@ -148,21 +177,16 @@ const photosData = photos.map(p => ({
       <p class="text-xl text-gray-600 mb-8">
         Je suis disponible pour vos projets photo
       </p>
-      <a
-        href="/contact"
-        class="inline-block bg-accent text-white px-10 py-4 rounded-full font-bold shadow-lg hover:shadow-xl transition-all"
-      >
-        Me contacter
-      </a>
+
+      href="/contact" class="inline-block bg-accent text-white px-10 py-4
+      rounded-full font-bold shadow-lg hover:shadow-xl transition-all" > Me
+      contacter
     </div>
   </section>
 </Layoutprojet>
 
 <style>
-<<<<<<< HEAD
-=======
   /* Masonry Grid */
->>>>>>> parent of 59d0c35 (galerie)
   .masonry-grid {
     column-count: 1;
     column-gap: 1.5rem;
@@ -185,22 +209,27 @@ const photosData = photos.map(p => ({
     margin-bottom: 1.5rem;
     display: inline-block;
     width: 100%;
-  }
-
-<<<<<<< HEAD
-=======
-  /* Animation d'apparition */
->>>>>>> parent of 59d0c35 (galerie)
-  .masonry-item {
     animation: fadeInUp 0.6s ease-out both;
   }
 
-  .masonry-item:nth-child(1) { animation-delay: 0.1s; }
-  .masonry-item:nth-child(2) { animation-delay: 0.2s; }
-  .masonry-item:nth-child(3) { animation-delay: 0.3s; }
-  .masonry-item:nth-child(4) { animation-delay: 0.4s; }
-  .masonry-item:nth-child(5) { animation-delay: 0.5s; }
-  .masonry-item:nth-child(6) { animation-delay: 0.6s; }
+  .masonry-item:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  .masonry-item:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .masonry-item:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .masonry-item:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  .masonry-item:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+  .masonry-item:nth-child(6) {
+    animation-delay: 0.6s;
+  }
 
   @keyframes fadeInUp {
     from {
@@ -213,9 +242,92 @@ const photosData = photos.map(p => ({
     }
   }
 
-  /* Lightbox */
+  /* Boutons de filtre */
+  .filter-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-accent, #cc6633);
+    color: var(--color-accent, #cc6633);
+  }
+
+  .filter-btn.active {
+    background: var(--color-accent, #cc6633);
+    border-color: var(--color-accent, #cc6633);
+    color: white;
+  }
+
+  /* Lightbox / carrousel */
   #lightbox.active {
     display: flex !important;
+  }
+
+  .lightbox-image {
+    animation: fadeImage 0.3s ease;
+  }
+
+  @keyframes fadeImage {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .lightbox-btn {
+    position: absolute;
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-btn:hover {
+    background: var(--color-accent, #cc6633);
+    border-color: var(--color-accent, #cc6633);
+  }
+
+  .lightbox-close {
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .lightbox-nav {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 2rem;
+    line-height: 1;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox-prev {
+    left: 1.5rem;
+  }
+  .lightbox-next {
+    right: 1.5rem;
   }
 </style>
 
@@ -223,48 +335,52 @@ const photosData = photos.map(p => ({
   const photos = photosData;
   let currentIndex = 0;
 
-  // Ouvrir lightbox
-  document.querySelectorAll('.masonry-item').forEach((item, index) => {
-    item.addEventListener('click', () => {
+  // Ouvrir la lightbox (uniquement sur les items visibles)
+  function getVisibleItems() {
+    return Array.from(document.querySelectorAll(".masonry-item")).filter(
+      (item) => item.style.display !== "none",
+    );
+  }
+
+  document.querySelectorAll(".masonry-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const index = parseInt(item.dataset.index, 10);
       currentIndex = index;
       showLightbox();
     });
   });
 
-  // Fermer lightbox
-  document.getElementById('closeLightbox')?.addEventListener('click', closeLightbox);
-  document.getElementById('lightbox')?.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target && target.id === 'lightbox') closeLightbox();
+  // Fermer la lightbox
+  document
+    .getElementById("closeLightbox")
+    ?.addEventListener("click", closeLightbox);
+  document.getElementById("lightbox")?.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "lightbox") closeLightbox();
   });
 
-<<<<<<< HEAD
-=======
-  // Navigation
->>>>>>> parent of 59d0c35 (galerie)
-  document.getElementById('prevPhoto')?.addEventListener('click', (e) => {
+  // Navigation précédent / suivant
+  document.getElementById("prevPhoto")?.addEventListener("click", (e) => {
     e.stopPropagation();
     currentIndex = (currentIndex - 1 + photos.length) % photos.length;
     showLightbox();
   });
 
-  document.getElementById('nextPhoto')?.addEventListener('click', (e) => {
+  document.getElementById("nextPhoto")?.addEventListener("click", (e) => {
     e.stopPropagation();
     currentIndex = (currentIndex + 1) % photos.length;
     showLightbox();
   });
 
+  document.addEventListener("keydown", (e) => {
+    const lightbox = document.getElementById("lightbox");
+    if (!lightbox?.classList.contains("active")) return;
 
-  document.addEventListener('keydown', (e) => {
-    const lightbox = document.getElementById('lightbox');
-    if (!lightbox?.classList.contains('active')) return;
-
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') {
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") {
       currentIndex = (currentIndex - 1 + photos.length) % photos.length;
       showLightbox();
     }
-    if (e.key === 'ArrowRight') {
+    if (e.key === "ArrowRight") {
       currentIndex = (currentIndex + 1) % photos.length;
       showLightbox();
     }
@@ -272,23 +388,56 @@ const photosData = photos.map(p => ({
 
   function showLightbox() {
     const photo = photos[currentIndex];
-    const lightbox = document.getElementById('lightbox');
-    const image = document.getElementById('lightboxImage');
-    const title = document.getElementById('lightboxTitle');
-    const legende = document.getElementById('lightboxLegende');
+    const lightbox = document.getElementById("lightbox");
+    const image = document.getElementById("lightboxImage");
+    const title = document.getElementById("lightboxTitle");
+    const legende = document.getElementById("lightboxLegende");
+    const counter = document.getElementById("lightboxCounter");
 
-    if (image) image.src = photo.image;
-    if (title) title.textContent = photo.titre || '';
-    if (legende) legende.textContent = photo.legende || '';
-    
+    if (image) {
+      image.style.opacity = "0";
+      image.src = photo.image;
+      requestAnimationFrame(() => {
+        image.style.opacity = "1";
+      });
+    }
+    if (title) title.textContent = photo.titre || "";
+    if (legende) legende.textContent = photo.legende || "";
+    if (counter) counter.textContent = `${currentIndex + 1} / ${photos.length}`;
+
     if (lightbox) {
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      lightbox.classList.add("active");
+      document.body.style.overflow = "hidden";
     }
   }
 
   function closeLightbox() {
-    document.getElementById('lightbox')?.classList.remove('active');
-    document.body.style.overflow = 'auto';
+    document.getElementById("lightbox")?.classList.remove("active");
+    document.body.style.overflow = "auto";
   }
+
+  // Filtres par catégorie
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".filter-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const filter = btn.dataset.filter;
+      let visibleCount = 0;
+
+      document.querySelectorAll(".masonry-item").forEach((item) => {
+        const cat = item.dataset.categorie;
+        const show = filter === "all" || cat === filter;
+        item.style.display = show ? "" : "none";
+        if (show) visibleCount++;
+      });
+
+      const noResults = document.getElementById("noResults");
+      if (noResults) {
+        noResults.classList.toggle("hidden", visibleCount > 0);
+      }
+    });
+  });
 </script>
